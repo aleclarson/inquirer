@@ -3,7 +3,7 @@
  * `list` type prompt
  */
 
-var _ = require('lodash');
+var _ = require('../lodash');
 var chalk = require('chalk');
 var figures = require('figures');
 var cliCursor = require('cli-cursor');

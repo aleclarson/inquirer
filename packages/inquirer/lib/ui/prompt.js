@@ -1,5 +1,5 @@
 'use strict';
-var _ = require('lodash');
+var _ = require('../lodash');
 var { defer, empty, from, of } = require('rxjs');
 var { concatMap, filter, publish, reduce } = require('rxjs/operators');
 var runAsync = require('run-async');

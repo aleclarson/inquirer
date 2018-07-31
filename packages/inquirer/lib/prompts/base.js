@@ -4,7 +4,7 @@
  * Should be extended by prompt types.
  */
 
-var _ = require('lodash');
+var _ = require('../lodash');
 var chalk = require('chalk');
 var runAsync = require('run-async');
 var { filter, flatMap, share, take, takeUntil } = require('rxjs/operators');

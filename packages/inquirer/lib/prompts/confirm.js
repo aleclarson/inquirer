@@ -3,7 +3,7 @@
  * `confirm` type prompt
  */
 
-var _ = require('lodash');
+var _ = require('../lodash');
 var chalk = require('chalk');
 var { take, takeUntil } = require('rxjs/operators');
 var Base = require('./base');
