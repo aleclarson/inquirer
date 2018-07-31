@@ -28,7 +28,7 @@ class PromptUI extends Base {
     // Create an observable, unless we received one as parameter.
     // Note: As this is a public interface, we cannot do an instanceof check as we won't
     // be using the exact same object in memory.
-    var obs = _.isArray(questions) ? from(questions) : questions;
+    var obs = Array.isArray(questions) ? from(questions) : questions;
 
     this.process = obs.pipe(
       concatMap(this.processQuestion.bind(this)),
