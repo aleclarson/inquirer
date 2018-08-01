@@ -17,5 +17,5 @@ module.exports = {
   omit: require('lodash.omit'),
   set: require('lodash.set'),
   sum: require('lodash.sum'),
-  uniq: require('lodash.uniq'),
+  uniq: require('lodash.uniq')
 };
