@@ -7,6 +7,7 @@ module.exports = {
   find: require('lodash.find'),
   findIndex: require('lodash.findindex'),
   flatten: require('lodash.flatten'),
+  get: require('lodash.get'),
   isBoolean: require('lodash.isboolean'),
   isFunction: require('lodash.isfunction'),
   isNumber: require('lodash.isnumber'),

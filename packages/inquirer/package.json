@@ -51,6 +51,7 @@
     "lodash.find": "^4.6.0",
     "lodash.findindex": "^4.6.0",
     "lodash.flatten": "^4.4.0",
+    "lodash.get": "^4.4.2",
     "lodash.isboolean": "^3.0.3",
     "lodash.isfunction": "^3.0.9",
     "lodash.isnumber": "^3.0.3",
