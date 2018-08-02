@@ -151,6 +151,7 @@ class ListPrompt extends Base {
 
 /**
  * Function for rendering list choices
+ * @param  {Array}  choices The possible choices
  * @param  {Number} pointer Position of the pointer
  * @return {String}         Rendered content
  */

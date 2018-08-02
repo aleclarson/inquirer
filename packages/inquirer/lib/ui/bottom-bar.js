@@ -77,7 +77,6 @@ class BottomBar extends Base {
 
   /**
    * Helper for writing message in Prompt
-   * @param {BottomBar} prompt  - The Prompt object that extends tty
    * @param {String} message - The message to be output
    */
   write(message) {

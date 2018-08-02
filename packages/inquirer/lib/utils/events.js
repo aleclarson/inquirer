@@ -37,17 +37,8 @@ module.exports = function(rl) {
       share()
     ),
 
-    spaceKey: keypress.pipe(
-      filter(({ key }) => key && key.name === 'space'),
-      share()
-    ),
-    aKey: keypress.pipe(
-      filter(({ key }) => key && key.name === 'a'),
-      share()
-    ),
-    iKey: keypress.pipe(
-      filter(({ key }) => key && key.name === 'i'),
-      share()
-    )
+    spaceKey: keypress.pipe(filter(({ key }) => key && key.name === 'space'), share()),
+    aKey: keypress.pipe(filter(({ key }) => key && key.name === 'a'), share()),
+    iKey: keypress.pipe(filter(({ key }) => key && key.name === 'i'), share())
   };
 };

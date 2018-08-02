@@ -202,8 +202,8 @@ class ExpandPrompt extends Base {
 
   /**
    * Generate a string out of the choices keys
-   * @param  {Array}  choices
-   * @param  {Number|String} default - the choice index or name to capitalize
+   * @param  {Array} choices The possible choices
+   * @param  {Number|String} defaultChoice The choice index or name to capitalize
    * @return {String} The rendered choices key string
    */
   generateChoicesString(choices, defaultChoice) {
@@ -226,6 +226,7 @@ class ExpandPrompt extends Base {
 
 /**
  * Function for rendering checkbox choices
+ * @param  {Array}  choices The possible choices
  * @param  {String} pointer Selected key
  * @return {String}         Rendered content
  */

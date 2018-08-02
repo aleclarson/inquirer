@@ -22,7 +22,7 @@ inquirer.ui = {
 /**
  * Create a new self-contained prompt module.
  * @param {Object} opt Readline options
- * @return {Function}
+ * @return {Function} Prompt module
  */
 inquirer.createPromptModule = function(opt) {
   var promptModule = function(questions, answers) {
