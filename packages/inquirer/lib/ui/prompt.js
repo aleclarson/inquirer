@@ -45,9 +45,9 @@ class PromptUI extends Base {
     return this.process
       .pipe(
         reduce((answers, answer) => {
-          _.set(this.answers, answer.name, answer.answer);
-          return this.answers;
-        }, {})
+          _.set(answers, answer.name, answer.answer);
+          return answers;
+        }, this.answers)
       )
       .toPromise(Promise)
       .then(this.onCompletion.bind(this));
