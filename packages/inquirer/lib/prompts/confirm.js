@@ -44,6 +44,8 @@ class ConfirmPrompt extends Base {
 
     if (typeof answer === 'boolean') {
       message += chalk.cyan(answer ? 'Yes' : 'No');
+    } else if (typeof answer === 'string') {
+      message += chalk.cyan(answer)
     } else {
       message += this.rl.line;
     }
