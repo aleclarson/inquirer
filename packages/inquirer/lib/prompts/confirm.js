@@ -9,6 +9,8 @@ var { map, take, takeUntil } = require('rxjs/operators');
 var Base = require('./base');
 var observe = require('../utils/events');
 
+var alwaysFinal = Object.freeze({ isFinal: true })
+
 class ConfirmPrompt extends Base {
   constructor(questions, rl, answers) {
     super(questions, rl, answers);
@@ -65,7 +67,8 @@ class ConfirmPrompt extends Base {
 
   onEnd(state) {
     this.status = 'answered';
-    this.render(state.value);
+    this.render(this.opt.transformer(state.value, this.answers, alwaysFinal));
+
     this.screen.done();
     this.done(this.opt.filter(state.value));
   }
