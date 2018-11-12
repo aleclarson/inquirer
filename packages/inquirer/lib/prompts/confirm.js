@@ -64,9 +64,12 @@ class ConfirmPrompt extends Base {
    */
 
   onEnd(state) {
-    this.status = 'answered';
-
     var output = this.opt.filter(state.value);
+    if (typeof output !== 'boolean') {
+      output = this.rawDefault;
+    }
+
+    this.status = 'answered';
     this.render(output);
 
     this.screen.done();
