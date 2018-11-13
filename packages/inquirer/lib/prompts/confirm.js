@@ -40,12 +40,14 @@ class ConfirmPrompt extends Base {
    */
 
   render(answer) {
-    var message = this.getQuestion();
+    var transformer = this.opt.transformer;
+    if (transformer && answer != null) {
+      answer = transformer(answer)
+    }
 
-    if (typeof answer === 'boolean') {
-      message += chalk.cyan(answer ? 'Yes' : 'No');
-    } else if (typeof answer === 'string') {
-      message += chalk.cyan(answer)
+    var message = this.getQuestion();
+    if (answer != null) {
+      message += typeof answer == 'boolean' ? chalk.cyan(answer ? 'Yes' : 'No') : answer;
     } else {
       message += this.rl.line;
     }
@@ -68,11 +70,13 @@ class ConfirmPrompt extends Base {
    */
 
   onEnd(state) {
+    var filter = this.opt.filter;
+
     this.status = 'answered';
-    this.render(this.opt.transformer(state.value, this.answers, alwaysFinal));
+    this.render(state.value);
 
     this.screen.done();
-    this.done(this.opt.filter(state.value));
+    this.done(filter ? filter(state.value) : state.value);
   }
 
   /**
