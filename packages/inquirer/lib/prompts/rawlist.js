@@ -105,8 +105,8 @@ class RawListPrompt extends Base {
     return choice ? choice.value : null;
   }
 
-  filterBypass(input) {
-    return List.prototype.filterBypass.call(this, input);
+  filterAuto(input) {
+    return List.prototype.filterAuto.call(this, input);
   }
 
   onEnd(state) {

@@ -99,7 +99,7 @@ class ListPrompt extends Base {
     return this.opt.choices.getChoice(this.selected).value;
   }
 
-  filterBypass(input) {
+  filterAuto(input) {
     var choices = this.opt.choices;
     var idx = Number(input);
     if (Number.isNaN(idx)) {

@@ -69,8 +69,8 @@ class Prompt {
       } else {
         val = rx.of(val);
       }
-      if (this.filterBypass) {
-        val = val.pipe(map(this.filterBypass, this));
+      if (this.filterAuto) {
+        val = val.pipe(map(this.filterAuto, this));
       }
       val.subscribe(val => {
         if (val == null) {
@@ -124,7 +124,7 @@ class Prompt {
     return validation;
   }
 
-  filterBypass(input) {
+  filterAuto(input) {
     return input == null ? null : String(input);
   }
 

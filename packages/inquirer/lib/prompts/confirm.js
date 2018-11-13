@@ -59,7 +59,7 @@ class ConfirmPrompt extends Base {
     return _.isBoolean(input) ? input : input ? /^y(es)?/i.test(input) : this.rawDefault;
   }
 
-  filterBypass(input) {
+  filterAuto(input) {
     return input === true || /^y(es)?/i.test(input);
   }
 

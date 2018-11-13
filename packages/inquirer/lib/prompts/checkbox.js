@@ -131,7 +131,7 @@ class CheckboxPrompt extends Base {
     return _.map(choices, 'value');
   }
 
-  filterBypass(input) {
+  filterAuto(input) {
     var choices = this.opt.choices;
     var valid = true;
     var list = Array.isArray(input) ? input : input.split(',');
