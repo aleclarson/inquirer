@@ -9,13 +9,23 @@ var Base = require('./base');
 var observe = require('../utils/events');
 
 class InputPrompt extends Base {
+  constructor(question, rl, answers) {
+    super(question, rl, answers)
+
+    this.default = this.opt.default;
+    // Never render the default in multiline mode.
+    if (this.opt.multiline) {
+      this.opt.default = undefined;
+    }
+  }
   /**
    * Start the Inquiry session
    * @return {this}
    */
 
   _run() {
-    // Once user confirm (enter key)
+    // By default, the enter key submits the input.
+    // In multiline mode, an empty line submits.
     var events = observe(this.rl);
     var validation = this.submit(events.line);
 
@@ -30,29 +40,24 @@ class InputPrompt extends Base {
    */
 
   render(error) {
-    var bottomContent = '';
-    var appendContent = '';
-    var message = this.getQuestion();
-    var transformer = this.opt.transformer;
+    var input;
     var isFinal = this.status === 'answered';
-
-    if (isFinal) {
-      appendContent = this.answer;
+    if (this.opt.multiline) {
+      input = '\n' + (this.answer ? this.answer + '\n' : '') + this.rl.line;
     } else {
-      appendContent = this.rl.line;
-    }
+      input = isFinal ? this.answer : this.rl.line;
 
-    if (transformer) {
-      message += transformer(appendContent, this.answers, { isFinal });
-    } else {
-      message += isFinal ? chalk.cyan(appendContent) : appendContent;
+      var transformer = this.opt.transformer;
+      if (transformer) {
+        input = transformer(input, this.answers, { isFinal });
+      } else if (isFinal) {
+        input = chalk.cyan(input);
+      }
     }
-
-    if (error) {
-      bottomContent = chalk.red('>> ') + error;
-    }
-
-    this.screen.render(message, bottomContent);
+    this.screen.render(
+      this.getQuestion() + input,
+      error ? chalk.red('>> ') + error : '',
+    );
   }
 
   /**
@@ -60,18 +65,20 @@ class InputPrompt extends Base {
    */
 
   filterInput(input) {
-    if (!input) {
-      return this.opt.default == null ? '' : this.opt.default;
-    }
-    return input;
+    return input || (this.default == null ? '' : this.default);
   }
 
   onEnd(state) {
-    this.answer = state.value;
-    super.onEnd();
+    if (this.opt.multiline && state.value) {
+      // Append each line to the previous lines.
+      this.answer = (this.answer ? this.answer + '\n' : '') + state.value;
+      this.render();
 
-    this.screen.done();
-    this.done(state.value);
+      // Ask for the next line.
+      return this._run();
+    }
+
+    this.useAnswer((this.answer || '') + state.value);
   }
 
   onError(state) {
@@ -84,6 +91,18 @@ class InputPrompt extends Base {
 
   onKeypress() {
     this.render();
+  }
+
+  useAnswer(answer) {
+    this.answer = this.filterInput(answer);
+    super.onEnd();
+    this.screen.done();
+    if (this.opt.multiline) {
+      this.done(this.answer ? this.answer.split('\n') : []);
+      this.abortSubscription.unsubscribe();
+    } else {
+      this.done(this.answer);
+    }
   }
 }
 
