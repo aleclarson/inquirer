@@ -38,6 +38,7 @@ module.exports = function(rl) {
     ),
 
     spaceKey: keypress.pipe(filter(({ key }) => key && key.name === 'space'), share()),
+    delKey: keypress.pipe(filter(({ key }) => key && (key.name === 'delete' || key.name === 'backspace')), share()),
     aKey: keypress.pipe(filter(({ key }) => key && key.name === 'a'), share()),
     iKey: keypress.pipe(filter(({ key }) => key && key.name === 'i'), share())
   };

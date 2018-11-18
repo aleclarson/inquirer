@@ -19,6 +19,7 @@ class EditorPrompt extends Base {
     // Open Editor on "line" (Enter Key)
     var events = observe(this.rl);
     this.lineSubscription = events.line.subscribe(this.startExternalEditor.bind(this));
+    this.delSubscription = events.delKey.subscribe(this.skipExternalEditor.bind(this));
 
     // Trigger validation when editor closes
     this.editorResult = new Subject();
@@ -27,6 +28,10 @@ class EditorPrompt extends Base {
     // Prevents default from being printed on screen (can look weird with multiple lines)
     this.currentText = this.opt.default;
     this.opt.default = null;
+
+    // The editor is "skipped" when the Delete key is pressed instead of the
+    // Return key. For certainty, a unique message appears when an editor is skipped.
+    this.skipped = this.opt.skipped;
   }
 
   /**
@@ -39,7 +44,7 @@ class EditorPrompt extends Base {
     var message = this.getQuestion();
 
     if (this.status === 'answered') {
-      message += chalk.dim('Received');
+      message += chalk.dim(this.skipped ? 'Skipped' : 'Success');
     } else {
       message += chalk.dim('Press <enter> to launch your preferred editor.');
     }
@@ -61,6 +66,11 @@ class EditorPrompt extends Base {
     editAsync(this.currentText, this.endExternalEditor.bind(this));
   }
 
+  skipExternalEditor() {
+    this.skipped = true;
+    this.editorResult.next('');
+  }
+
   endExternalEditor(error, result) {
     this.rl.resume();
     if (error) {
@@ -72,6 +82,7 @@ class EditorPrompt extends Base {
 
   onEnd(state) {
     this.editorResult.unsubscribe();
+    this.delSubscription.unsubscribe();
     this.lineSubscription.unsubscribe();
     this.answer = state.value;
     super.onEnd();
