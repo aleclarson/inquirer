@@ -24,9 +24,15 @@ class InputPrompt extends Base {
    */
 
   _run() {
+    var events = observe(this.rl);
+    if (this.opt.multiline && !this.abortSubscription) {
+      this.abortSubscription = events.abortKey.subscribe(() => {
+        this.useAnswer(this.default);
+      });
+    }
+
     // By default, the enter key submits the input.
     // In multiline mode, an empty line submits.
-    var events = observe(this.rl);
     var validation = this.submit(events.line);
 
     events.keypress
