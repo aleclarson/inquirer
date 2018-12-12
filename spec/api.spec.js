@@ -3,10 +3,8 @@
  */
 
 var _ = require('lodash');
-var fixtures = require('./helpers/fixtures');
-var ReadlineStub = require('./helpers/readline');
-var inquirer = require('../lib/inquirer');
-var autosubmit = require('./helpers/events').autosubmit;
+var inquirer = require('..');
+var readline = require('readline');
 
 // Define prompts and their public API
 var prompts = [
@@ -45,43 +43,43 @@ var tests = {
   filter: function() {
     describe('filter API', function() {
       it('should filter the user input', function(done) {
-        this.fixture.filter = function() {
+        fixture.filter = function() {
           return 'pass';
         };
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         prompt.run().then(answer => {
-          expect(answer).to.equal('pass');
+          expect(answer).toBe('pass');
           done();
         });
 
-        this.rl.emit('line', '');
+        rl.emit('line', '');
       });
 
       it('should allow filter function to be asynchronous', function(done) {
-        this.fixture.filter = function() {
-          var done = this.async();
+        fixture.filter = function() {
+          var done = async();
           setTimeout(() => {
             done(null, 'pass');
           }, 0);
         };
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         prompt.run().then(answer => {
-          expect(answer).to.equal('pass');
+          expect(answer).toBe('pass');
           done();
         });
 
-        this.rl.emit('line', '');
+        rl.emit('line', '');
       });
 
       it('should handle errors produced in async filters', function() {
         var called = 0;
-        var rl = this.rl;
+        var rl = rl;
 
-        this.fixture.filter = function() {
+        fixture.filter = function() {
           called++;
-          var cb = this.async();
+          var cb = async();
 
           if (called === 2) {
             return cb(null, 'pass');
@@ -91,10 +89,10 @@ var tests = {
           return cb(new Error('fail'));
         };
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         var promise = prompt.run();
 
-        this.rl.emit('line');
+        rl.emit('line');
         return promise;
       });
 
@@ -111,7 +109,7 @@ var tests = {
             name: 'q2',
             message: 'message',
             filter: function(input, answers) {
-              expect(answers.q1).to.equal(true);
+              expect(answers.q1).toBe(true);
               return input;
             },
             default: false
@@ -122,8 +120,8 @@ var tests = {
         autosubmit(promise.ui);
 
         return promise.then(answers => {
-          expect(answers.q1).to.equal(true);
-          expect(answers.q2).to.equal(false);
+          expect(answers.q1).toBe(true);
+          expect(answers.q2).toBe(false);
         });
       });
     });
@@ -134,21 +132,21 @@ var tests = {
       it('should reject input if boolean false is returned', function() {
         var called = 0;
 
-        this.fixture.validate = () => {
+        fixture.validate = () => {
           called++;
           // Make sure returning false won't continue
           if (called === 2) {
             return true;
           }
 
-          this.rl.emit('line');
+          rl.emit('line');
           return false;
         };
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         var promise = prompt.run();
 
-        this.rl.emit('line');
+        rl.emit('line');
         return promise;
       });
 
@@ -157,7 +155,7 @@ var tests = {
         var called = 0;
         var errorMessage = 'uh oh, error!';
 
-        this.fixture.validate = function() {
+        fixture.validate = function() {
           called++;
           // Make sure returning false won't continue
           if (called === 2) {
@@ -169,10 +167,10 @@ var tests = {
           return errorMessage;
         };
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         prompt.run();
 
-        this.rl.emit('line');
+        rl.emit('line');
       });
 
       it('should reject input if a Promise is returned which rejects', function(done) {
@@ -180,7 +178,7 @@ var tests = {
         var called = 0;
         var errorMessage = 'uh oh, error!';
 
-        this.fixture.validate = function() {
+        fixture.validate = function() {
           called++;
           // Make sure returning false won't continue
           if (called === 2) {
@@ -192,26 +190,26 @@ var tests = {
           return Promise.reject(errorMessage);
         };
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         prompt.run();
 
-        this.rl.emit('line');
+        rl.emit('line');
       });
 
       it('should accept input if boolean true is returned', function() {
         var called = 0;
 
-        this.fixture.validate = function() {
+        fixture.validate = function() {
           called++;
           return true;
         };
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         var promise = prompt.run().then(() => {
-          expect(called).to.equal(1);
+          expect(called).toBe(1);
         });
 
-        this.rl.emit('line');
+        rl.emit('line');
         return promise;
       });
 
@@ -219,8 +217,8 @@ var tests = {
         var self = this;
         var called = 0;
 
-        this.fixture.validate = function() {
-          var done = this.async();
+        fixture.validate = function() {
+          var done = async();
           setTimeout(() => {
             called++;
             // Make sure returning false won't continue
@@ -233,22 +231,22 @@ var tests = {
           }, 0);
         };
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         var promise = prompt.run();
 
-        this.rl.emit('line');
+        rl.emit('line');
         return promise;
       });
 
       it('should allow validate function to return a Promise', function() {
-        this.fixture.validate = function() {
+        fixture.validate = function() {
           return Promise.resolve(true);
         };
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         var promise = prompt.run();
 
-        this.rl.emit('line');
+        rl.emit('line');
         return promise;
       });
 
@@ -265,7 +263,7 @@ var tests = {
             name: 'q2',
             message: 'message',
             validate: function(input, answers) {
-              expect(answers.q1).to.equal(true);
+              expect(answers.q1).toBe(true);
               return true;
             },
             default: false
@@ -276,8 +274,8 @@ var tests = {
         autosubmit(promise.ui);
 
         return promise.then(answers => {
-          expect(answers.q1).to.equal(true);
-          expect(answers.q2).to.equal(false);
+          expect(answers.q1).toBe(true);
+          expect(answers.q2).toBe(false);
         });
       });
     });
@@ -286,29 +284,29 @@ var tests = {
   default: function() {
     describe('default API', function() {
       it('should allow a default value', function(done) {
-        this.fixture.default = 'pass';
+        fixture.default = 'pass';
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         prompt.run().then(answer => {
-          expect(this.rl.output.__raw__).to.contain('(pass)');
-          expect(answer).to.equal('pass');
+          expect(rl.output.__raw__).toContain('(pass)');
+          expect(answer).toBe('pass');
           done();
         });
 
-        this.rl.emit('line', '');
+        rl.emit('line', '');
       });
 
       it('should allow a falsy default value', function(done) {
-        this.fixture.default = 0;
+        fixture.default = 0;
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         prompt.run().then(answer => {
-          expect(this.rl.output.__raw__).to.contain('(0)');
-          expect(answer).to.equal(0);
+          expect(rl.output.__raw__).toContain('(0)');
+          expect(answer).toBe(0);
           done();
         });
 
-        this.rl.emit('line', '');
+        rl.emit('line', '');
       });
     });
   },
@@ -316,21 +314,21 @@ var tests = {
   message: function() {
     describe('message API', function() {
       it('should print message on screen', function() {
-        this.fixture.message = 'Foo bar bar foo bar';
+        fixture.message = 'Foo bar bar foo bar';
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         prompt.run();
 
-        expect(this.rl.output.__raw__).to.contain(this.fixture.message);
+        expect(rl.output.__raw__).toContain(fixture.message);
       });
       it('should default to name for message', function() {
-        this.fixture.name = 'testfoobarbarfoobar';
-        delete this.fixture.message;
+        fixture.name = 'testfoobarbarfoobar';
+        delete fixture.message;
 
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         prompt.run();
 
-        expect(this.rl.output.__raw__).to.contain(this.fixture.name + ':');
+        expect(rl.output.__raw__).toContain(fixture.name + ':');
       });
     });
   },
@@ -338,13 +336,13 @@ var tests = {
   choices: function() {
     describe('choices API', function() {
       it('should print choices to screen', function() {
-        var prompt = new this.Prompt(this.fixture, this.rl);
+        var prompt = new Prompt(fixture, rl);
         var choices = prompt.opt.choices;
 
         prompt.run();
 
         _.each(choices.filter(inquirer.Separator.exclude), choice => {
-          expect(this.rl.output.__raw__).to.contain(choice.name);
+          expect(rl.output.__raw__).toContain(choice.name);
         });
       });
     });
@@ -354,9 +352,9 @@ var tests = {
     describe('Missing value', function() {
       it('`name` should throw', function() {
         expect(() => {
-          delete this.fixture.name;
-          return new this.Prompt(this.fixture, this.rl);
-        }).to.throw(/name/);
+          delete fixture.name;
+          return new Prompt(fixture, rl);
+        }).toThrowError(/name/);
       });
     });
   }
@@ -367,9 +365,9 @@ describe('Prompt public APIs', function() {
   _.each(prompts, function(detail) {
     describe('on ' + detail.name + ' prompt', function() {
       beforeEach(function() {
-        this.fixture = _.clone(fixtures[detail.name]);
-        this.Prompt = inquirer.prompt.prompts[detail.name];
-        this.rl = new ReadlineStub();
+        fixture = _.clone(fixtures[detail.name]);
+        Prompt = inquirer.prompt.prompts[detail.name];
+        rl = readline.createInterface();
       });
 
       _.each(detail.apis, function(apiName) {

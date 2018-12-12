@@ -1,115 +1,115 @@
 var _ = require('lodash');
-var ReadlineStub = require('../helpers/readline');
-var fixtures = require('../helpers/fixtures');
+var readline = require('readline');
 
 var Expand = require('../../lib/prompts/expand');
 
 describe('`expand` prompt', function() {
+  let rl, fixture, expand;
   beforeEach(function() {
-    this.fixture = _.clone(fixtures.expand);
-    this.rl = new ReadlineStub();
-    this.expand = new Expand(this.fixture, this.rl);
+    fixture = _.clone(fixtures.expand);
+    rl = readline.createInterface();
+    expand = new Expand(fixture, rl);
   });
 
   it('should throw if `key` is missing', function() {
     expect(() => {
-      this.fixture.choices = ['a', 'a'];
-      return new Expand(this.fixture, this.rl);
-    }).to.throw(/Format error/);
+      fixture.choices = ['a', 'a'];
+      return new Expand(fixture, rl);
+    }).toThrowError(/Format error/);
   });
 
   it('should throw if `key` is duplicate', function() {
     expect(() => {
-      this.fixture.choices = [{ key: 'a', name: 'foo' }, { key: 'a', name: 'foo' }];
-      return new Expand(this.fixture, this.rl);
-    }).to.throw(/Duplicate key error/);
+      fixture.choices = [{ key: 'a', name: 'foo' }, { key: 'a', name: 'foo' }];
+      return new Expand(fixture, rl);
+    }).toThrowError(/Duplicate key error/);
   });
 
   it('should throw if `key` is `h`', function() {
     expect(() => {
-      this.fixture.choices = [{ key: 'h', name: 'foo' }];
-      return new Expand(this.fixture, this.rl);
-    }).to.throw(/Reserved key error/);
+      fixture.choices = [{ key: 'h', name: 'foo' }];
+      return new Expand(fixture, rl);
+    }).toThrowError(/Reserved key error/);
   });
 
   it('should allow false as a value', function() {
-    var promise = this.expand.run();
+    var promise = expand.run();
 
-    this.rl.emit('line', 'd');
+    rl.emit('line', 'd');
     return promise.then(answer => {
-      expect(answer).to.equal(false);
+      expect(answer).toBe(false);
     });
   });
 
   it('pass the value as answer, and display short on the prompt', function() {
-    this.fixture.choices = [
+    fixture.choices = [
       { key: 'a', name: 'A Name', value: 'a value', short: 'ShortA' },
       { key: 'b', name: 'B Name', value: 'b value', short: 'ShortB' }
     ];
-    var prompt = new Expand(this.fixture, this.rl);
+    var prompt = new Expand(fixture, rl);
     var promise = prompt.run();
-    this.rl.emit('line', 'b');
+    rl.emit('line', 'b');
 
     return promise.then(answer => {
-      expect(answer).to.equal('b value');
-      expect(this.rl.output.__raw__).to.match(/ShortB/);
+      expect(answer).toBe('b value');
+      expect(rl.output.__raw__).toMatch(/ShortB/);
     });
   });
 
   it('should use a string the `default` value', function(done) {
-    this.fixture.default = 'chile';
-    this.expand = new Expand(this.fixture, this.rl);
+    fixture.default = 'chile';
+    expand = new Expand(fixture, rl);
 
-    this.expand.run().then(answer => {
-      expect(answer).to.equal('chile');
+    expand.run().then(answer => {
+      expect(answer).toBe('chile');
       done();
     });
-    this.rl.emit('line');
+    rl.emit('line');
   });
 
   it('should use the `default` argument value', function(done) {
-    this.fixture.default = 1;
-    this.expand = new Expand(this.fixture, this.rl);
+    fixture.default = 1;
+    expand = new Expand(fixture, rl);
 
-    this.expand.run().then(answer => {
-      expect(answer).to.equal('bar');
+    expand.run().then(answer => {
+      expect(answer).toBe('bar');
       done();
     });
-    this.rl.emit('line');
+    rl.emit('line');
   });
 
   it('should return the user input', function(done) {
-    this.expand.run().then(answer => {
-      expect(answer).to.equal('bar');
+    expand.run().then(answer => {
+      expect(answer).toBe('bar');
       done();
     });
-    this.rl.emit('line', 'b');
+    rl.emit('line', 'b');
   });
 
   it('should strip the user input', function(done) {
-    this.expand.run().then(answer => {
-      expect(answer).to.equal('bar');
+    expand.run().then(answer => {
+      expect(answer).toBe('bar');
       done();
     });
-    this.rl.emit('line', ' b ');
+    rl.emit('line', ' b ');
   });
 
   it('should have help option', function(done) {
-    this.expand.run().then(answer => {
-      expect(this.rl.output.__raw__).to.match(/a\) acab/);
-      expect(this.rl.output.__raw__).to.match(/b\) bar/);
-      expect(answer).to.equal('chile');
+    expand.run().then(answer => {
+      expect(rl.output.__raw__).toMatch(/a\) acab/);
+      expect(rl.output.__raw__).toMatch(/b\) bar/);
+      expect(answer).toBe('chile');
       done();
     });
-    this.rl.emit('line', 'h');
-    this.rl.emit('line', 'c');
+    rl.emit('line', 'h');
+    rl.emit('line', 'c');
   });
 
   it('should not allow invalid command', function() {
     var self = this;
-    var promise = this.expand.run();
+    var promise = expand.run();
 
-    this.rl.emit('line', 'blah');
+    rl.emit('line', 'blah');
     setTimeout(() => {
       self.rl.emit('line', 'a');
     }, 10);
@@ -117,44 +117,44 @@ describe('`expand` prompt', function() {
   });
 
   it('should display and capitalize the default choice `key`', function() {
-    this.fixture.default = 1;
-    this.expand = new Expand(this.fixture, this.rl);
+    fixture.default = 1;
+    expand = new Expand(fixture, rl);
 
-    this.expand.run();
-    expect(this.rl.output.__raw__).to.contain('(aBcdh)');
+    expand.run();
+    expect(rl.output.__raw__).toContain('(aBcdh)');
   });
 
   it('should display and capitalize the default choice by name value', function() {
-    this.fixture.default = 'chile';
-    this.expand = new Expand(this.fixture, this.rl);
+    fixture.default = 'chile';
+    expand = new Expand(fixture, rl);
 
-    this.expand.run();
-    expect(this.rl.output.__raw__).to.contain('(abCdh)');
+    expand.run();
+    expect(rl.output.__raw__).toContain('(abCdh)');
   });
 
   it('should display and capitalize the default choice H (Help) `key` if no string default matched', function() {
-    this.fixture.default = 'chile!';
-    this.expand = new Expand(this.fixture, this.rl);
+    fixture.default = 'chile!';
+    expand = new Expand(fixture, rl);
 
-    this.expand.run();
-    expect(this.rl.output.__raw__).to.contain('(abcdH)');
+    expand.run();
+    expect(rl.output.__raw__).toContain('(abcdH)');
   });
 
   it('should display and capitalize the default choice H (Help) `key` if none provided', function() {
-    delete this.fixture.default;
-    this.expand = new Expand(this.fixture, this.rl);
-    this.expand.run();
+    delete fixture.default;
+    expand = new Expand(fixture, rl);
+    expand.run();
 
-    expect(this.rl.output.__raw__).to.contain('(abcdH)');
+    expect(rl.output.__raw__).toContain('(abcdH)');
   });
 
   it("should 'autocomplete' the user input", function(done) {
-    this.expand = new Expand(this.fixture, this.rl);
-    this.expand.run();
-    this.rl.line = 'a';
-    this.rl.emit('keypress');
+    expand = new Expand(fixture, rl);
+    expand.run();
+    rl.line = 'a';
+    rl.emit('keypress');
     setTimeout(() => {
-      expect(this.rl.output.__raw__).to.contain('acab');
+      expect(rl.output.__raw__).toContain('acab');
       done();
     }, 10);
   });

@@ -1,23 +1,18 @@
-/**
- * Inquirer public API test
- */
-
-var sinon = require('sinon');
 var _ = require('lodash');
 var { Observable } = require('rxjs');
-var inquirer = require('../lib/inquirer');
-var autosubmit = require('./helpers/events').autosubmit;
+
+var inquirer = require('..');
 
 describe('inquirer.prompt', function() {
   beforeEach(function() {
-    this.prompt = inquirer.createPromptModule();
+    prompt = inquirer.createPromptModule();
   });
 
   it("should close and create a new readline instances each time it's called", function() {
     var ctx = this;
     var rl1;
 
-    var promise = this.prompt({
+    var promise = prompt({
       type: 'confirm',
       name: 'q1',
       message: 'message'
@@ -27,8 +22,8 @@ describe('inquirer.prompt', function() {
     rl1.emit('line');
 
     return promise.then(() => {
-      expect(rl1.close.called).to.equal(true);
-      expect(rl1.output.end.called).to.equal(true);
+      expect(rl1.close.called).toBe(true);
+      expect(rl1.output.end.called).toBe(true);
 
       var rl2;
       var promise2 = ctx.prompt({
@@ -41,10 +36,10 @@ describe('inquirer.prompt', function() {
       rl2.emit('line');
 
       return promise2.then(() => {
-        expect(rl2.close.called).to.equal(true);
-        expect(rl2.output.end.called).to.equal(true);
+        expect(rl2.close.called).toBe(true);
+        expect(rl2.output.end.called).toBe(true);
 
-        expect(rl1).to.not.equal(rl2);
+        expect(rl1).not.toBe(rl2);
       });
     });
   });
@@ -64,12 +59,12 @@ describe('inquirer.prompt', function() {
       }
     ];
 
-    var promise = this.prompt(prompts);
+    var promise = prompt(prompts);
     autosubmit(promise.ui);
 
     return promise.then(answers => {
-      expect(answers.q1).to.equal(true);
-      expect(answers.q2).to.equal(false);
+      expect(answers.q1).toBe(true);
+      expect(answers.q2).toBe(false);
     });
   });
 
@@ -88,7 +83,7 @@ describe('inquirer.prompt', function() {
       }
     ];
 
-    var promise = this.prompt(prompts);
+    var promise = prompt(prompts);
     autosubmit(promise.ui);
 
     return promise.then(answers => {
@@ -111,28 +106,28 @@ describe('inquirer.prompt', function() {
       default: 'bar'
     };
 
-    var promise = this.prompt(prompt);
+    var promise = prompt(prompt);
 
     promise.ui.rl.emit('line');
     return promise.then(answers => {
-      expect(answers.q1).to.equal('bar');
+      expect(answers.q1).toBe('bar');
     });
   });
 
   it('should parse `message` if passed as a function', function() {
     var stubMessage = 'foo';
-    this.prompt.registerPrompt('stub', function(params) {
-      this.opt = {
+    prompt.registerPrompt('stub', function(params) {
+      opt = {
         when: function() {
           return true;
         }
       };
-      this.run = sinon.stub().returns(Promise.resolve());
-      expect(params.message).to.equal(stubMessage);
+      run = jest.fn(() => Promise.resolve());
+      expect(params.message).toBe(stubMessage);
     });
 
     var msgFunc = function(answers) {
-      expect(answers.name1).to.equal('bar');
+      expect(answers.name1).toBe('bar');
       return stubMessage;
     };
 
@@ -150,25 +145,25 @@ describe('inquirer.prompt', function() {
       }
     ];
 
-    var promise = this.prompt(prompts);
+    var promise = prompt(prompts);
     promise.ui.rl.emit('line');
     promise.ui.rl.emit('line');
     return promise.then(() => {
       // Ensure we're not overwriting original prompt values.
-      expect(prompts[1].message).to.equal(msgFunc);
+      expect(prompts[1].message).toBe(msgFunc);
     });
   });
 
   it('should run asynchronous `message`', function(done) {
     var stubMessage = 'foo';
-    this.prompt.registerPrompt('stub', function(params) {
-      this.opt = {
+    prompt.registerPrompt('stub', function(params) {
+      opt = {
         when: function() {
           return true;
         }
       };
-      this.run = sinon.stub().returns(Promise.resolve());
-      expect(params.message).to.equal(stubMessage);
+      run = jest.fn(() => Promise.resolve());
+      expect(params.message).toBe(stubMessage);
       done();
     });
 
@@ -183,8 +178,8 @@ describe('inquirer.prompt', function() {
         type: 'stub',
         name: 'name',
         message: function(answers) {
-          expect(answers.name1).to.equal('bar');
-          var goOn = this.async();
+          expect(answers.name1).toBe('bar');
+          var goOn = async();
           setTimeout(() => {
             goOn(null, stubMessage);
           }, 0);
@@ -192,20 +187,20 @@ describe('inquirer.prompt', function() {
       }
     ];
 
-    var promise = this.prompt(prompts, function() {});
+    var promise = prompt(prompts, function() {});
     promise.ui.rl.emit('line');
   });
 
   it('should parse `default` if passed as a function', function(done) {
     var stubDefault = 'foo';
-    this.prompt.registerPrompt('stub', function(params) {
-      this.opt = {
+    prompt.registerPrompt('stub', function(params) {
+      opt = {
         when: function() {
           return true;
         }
       };
-      this.run = sinon.stub().returns(Promise.resolve());
-      expect(params.default).to.equal(stubDefault);
+      run = jest.fn(() => Promise.resolve());
+      expect(params.default).toBe(stubDefault);
       done();
     });
 
@@ -221,13 +216,13 @@ describe('inquirer.prompt', function() {
         name: 'name',
         message: 'message',
         default: function(answers) {
-          expect(answers.name1).to.equal('bar');
+          expect(answers.name1).toBe('bar');
           return stubDefault;
         }
       }
     ];
 
-    var promise = this.prompt(prompts, function() {});
+    var promise = prompt(prompts, function() {});
     promise.ui.rl.emit('line');
   });
 
@@ -248,8 +243,8 @@ describe('inquirer.prompt', function() {
         message: 'message',
         default: function(answers) {
           goesInDefault = true;
-          expect(answers.name1).to.equal('bar');
-          var goOn = this.async();
+          expect(answers.name1).toBe('bar');
+          var goOn = async();
           setTimeout(() => {
             goOn(null, input2Default);
           }, 0);
@@ -260,19 +255,19 @@ describe('inquirer.prompt', function() {
       }
     ];
 
-    promise = this.prompt(prompts);
+    promise = prompt(prompts);
     promise.ui.rl.emit('line');
 
     return promise.then(answers => {
-      expect(goesInDefault).to.equal(true);
-      expect(answers.q2).to.equal(input2Default);
+      expect(goesInDefault).toBe(true);
+      expect(answers.q2).toBe(input2Default);
     });
   });
 
   it('should pass previous answers to the prompt constructor', function(done) {
-    this.prompt.registerPrompt('stub', function(params, rl, answers) {
-      this.run = sinon.stub().returns(Promise.resolve());
-      expect(answers.name1).to.equal('bar');
+    prompt.registerPrompt('stub', function(params, rl, answers) {
+      run = jest.fn(() => Promise.resolve());
+      expect(answers.name1).toBe('bar');
       done();
     });
 
@@ -290,20 +285,20 @@ describe('inquirer.prompt', function() {
       }
     ];
 
-    var promise = this.prompt(prompts);
+    var promise = prompt(prompts);
     promise.ui.rl.emit('line');
   });
 
   it('should parse `choices` if passed as a function', function(done) {
     var stubChoices = ['foo', 'bar'];
-    this.prompt.registerPrompt('stub', function(params) {
-      this.run = sinon.stub().returns(Promise.resolve());
-      this.opt = {
+    prompt.registerPrompt('stub', function(params) {
+      run = jest.fn(() => Promise.resolve());
+      opt = {
         when: function() {
           return true;
         }
       };
-      expect(params.choices).to.equal(stubChoices);
+      expect(params.choices).toBe(stubChoices);
       done();
     });
 
@@ -319,13 +314,13 @@ describe('inquirer.prompt', function() {
         name: 'name',
         message: 'message',
         choices: function(answers) {
-          expect(answers.name1).to.equal('bar');
+          expect(answers.name1).toBe('bar');
           return stubChoices;
         }
       }
     ];
 
-    var promise = this.prompt(prompts, function() {});
+    var promise = prompt(prompts, function() {});
     promise.ui.rl.emit('line');
   });
 
@@ -337,9 +332,9 @@ describe('inquirer.prompt', function() {
       default: 'bar'
     };
 
-    var promise = this.prompt(prompt);
+    var promise = prompt(prompt);
     promise.then(answers => {
-      expect(answers.q1).to.equal('bar');
+      expect(answers.q1).toBe('bar');
       done();
     });
 
@@ -362,14 +357,14 @@ describe('inquirer.prompt', function() {
       }
     ];
 
-    var promise = this.prompt(prompts);
-    var spy = sinon.spy();
+    var promise = prompt(prompts);
+    var spy = jest.fn();
     promise.ui.process.subscribe(
       spy,
       function() {},
       function() {
-        sinon.assert.calledWith(spy, { name: 'name1', answer: 'bar' });
-        sinon.assert.calledWith(spy, { name: 'name', answer: 'doe' });
+        expect(spy).toBeCalledWith(spy, { name: 'name1', answer: 'bar' });
+        expect(spy).toBeCalledWith(spy, { name: 'name', answer: 'doe' });
         done();
       }
     );
@@ -378,7 +373,7 @@ describe('inquirer.prompt', function() {
   });
 
   it('should expose the UI', function(done) {
-    var promise = this.prompt([], function() {});
+    var promise = prompt([], function() {});
     expect(promise.ui.answers).to.be.an('object');
     done();
   });
@@ -403,12 +398,12 @@ describe('inquirer.prompt', function() {
       }, 30);
     });
 
-    promise = this.prompt(prompts);
+    promise = prompt(prompts);
     promise.ui.rl.emit('line');
 
     return promise.then(answers => {
-      expect(answers.q1).to.equal(true);
-      expect(answers.q2).to.equal(false);
+      expect(answers.q1).toBe(true);
+      expect(answers.q2).toBe(false);
     });
   });
 
@@ -425,12 +420,12 @@ describe('inquirer.prompt', function() {
           message: 'message',
           when: function(answers) {
             expect(answers).to.be.an('object');
-            expect(answers.q1).to.equal(true);
+            expect(answers.q1).toBe(true);
           }
         }
       ];
 
-      var promise = this.prompt(prompts);
+      var promise = prompt(prompts);
 
       autosubmit(promise.ui);
       return promise;
@@ -456,12 +451,12 @@ describe('inquirer.prompt', function() {
         }
       ];
 
-      var promise = this.prompt(prompts);
+      var promise = prompt(prompts);
       autosubmit(promise.ui);
 
       return promise.then(answers => {
-        expect(goesInWhen).to.equal(true);
-        expect(answers.q2).to.equal('bar-var');
+        expect(goesInWhen).toBe(true);
+        expect(answers.q2).toBe('bar-var');
       });
     });
 
@@ -481,11 +476,11 @@ describe('inquirer.prompt', function() {
         }
       ];
 
-      var promise = this.prompt(prompts);
+      var promise = prompt(prompts);
       autosubmit(promise.ui);
 
       return promise.then(answers => {
-        expect(answers.q2).to.equal('bar-var');
+        expect(answers.q2).toBe('bar-var');
       });
     });
 
@@ -514,14 +509,14 @@ describe('inquirer.prompt', function() {
         }
       ];
 
-      var promise = this.prompt(prompts);
+      var promise = prompt(prompts);
       autosubmit(promise.ui);
 
       return promise.then(answers => {
-        expect(goesInWhen).to.equal(true);
-        expect(answers.q2).to.equal(undefined);
-        expect(answers.q3).to.equal('foo');
-        expect(answers.q1).to.equal(true);
+        expect(goesInWhen).toBe(true);
+        expect(answers.q2).toBe(undefined);
+        expect(answers.q3).toBe('foo');
+        expect(answers.q1).toBe(true);
       });
     });
 
@@ -546,13 +541,13 @@ describe('inquirer.prompt', function() {
         }
       ];
 
-      var promise = this.prompt(prompts);
+      var promise = prompt(prompts);
       autosubmit(promise.ui);
 
       return promise.then(answers => {
-        expect(answers.q2).to.equal(undefined);
-        expect(answers.q3).to.equal('foo');
-        expect(answers.q1).to.equal(true);
+        expect(answers.q2).toBe(undefined);
+        expect(answers.q3).toBe('foo');
+        expect(answers.q1).toBe(true);
       });
     });
 
@@ -572,7 +567,7 @@ describe('inquirer.prompt', function() {
           default: 'foo-bar',
           when: function() {
             goesInWhen = true;
-            var goOn = this.async();
+            var goOn = async();
             setTimeout(() => {
               goOn(null, true);
             }, 0);
@@ -583,12 +578,12 @@ describe('inquirer.prompt', function() {
         }
       ];
 
-      promise = this.prompt(prompts);
+      promise = prompt(prompts);
       autosubmit(promise.ui);
 
       return promise.then(answers => {
-        expect(goesInWhen).to.equal(true);
-        expect(answers.q2).to.equal('foo-bar');
+        expect(goesInWhen).toBe(true);
+        expect(answers.q2).toBe('foo-bar');
       });
     });
 
@@ -604,11 +599,11 @@ describe('inquirer.prompt', function() {
         }
       ];
 
-      var promise = this.prompt(prompts);
+      var promise = prompt(prompts);
       autosubmit(promise.ui);
 
       return promise.then(answers => {
-        expect(answers.q).to.equal('foo');
+        expect(answers.q).toBe('foo');
       });
     });
   });
@@ -619,7 +614,7 @@ describe('inquirer.prompt', function() {
       inquirer.registerPrompt('foo', function(question, rl, answers) {
         expect(question).to.eql(questions[0]);
         expect(answers).to.eql({});
-        this.run = sinon.stub().returns(Promise.resolve());
+        run = jest.fn(() => Promise.resolve());
         done();
       });
 
@@ -629,7 +624,7 @@ describe('inquirer.prompt', function() {
     it('overwrite default prompt types', function(done) {
       var questions = [{ type: 'confirm', message: 'something' }];
       inquirer.registerPrompt('confirm', function() {
-        this.run = sinon.stub().returns(Promise.resolve());
+        run = jest.fn(() => Promise.resolve());
         done();
       });
 
@@ -643,7 +638,7 @@ describe('inquirer.prompt', function() {
       var ConfirmPrompt = inquirer.prompt.prompts.confirm;
       inquirer.registerPrompt('confirm', _.noop);
       inquirer.restoreDefaultPrompts();
-      expect(ConfirmPrompt).to.equal(inquirer.prompt.prompts.confirm);
+      expect(ConfirmPrompt).toBe(inquirer.prompt.prompts.confirm);
     });
   });
 
@@ -668,7 +663,7 @@ describe('inquirer.prompt', function() {
 
     return promise.then(answers => {
       process.stdout.getWindowSize = original;
-      expect(answers.q1).to.equal(true);
+      expect(answers.q1).toBe(true);
     });
   });
 });

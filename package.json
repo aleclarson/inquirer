@@ -3,7 +3,7 @@
   "version": "6.0.0",
   "description": "Extensible user input for nodejs",
   "repository": "aleclarson/inquirer",
-  "author": "Simon Boudrias <admin@simonboudrias.com>",
+  "license": "MIT",
   "files": [
     "lib"
   ],
@@ -16,22 +16,13 @@
     "tty",
     "menu"
   ],
+  "scripts": {
+    "test": "jest --coverage",
+    "debug": "node --inspect-brk ./node_modules/.bin/jest -i --no-cache --watch"
+  },
   "engines": {
     "node": ">=6.0.0"
   },
-  "devDependencies": {
-    "chai": "^4.0.1",
-    "lodash": "^4.3.0",
-    "mocha": "^5.0.0",
-    "mockery": "^2.1.0",
-    "nyc": "^12.0.1",
-    "sinon": "^5.0.0"
-  },
-  "scripts": {
-    "test": "nyc mocha test/**/* -r ./test/before",
-    "posttest": "nyc report --reporter=text-lcov > ../../coverage/nyc-report.lcov"
-  },
-  "license": "MIT",
   "dependencies": {
     "ansi-escapes": "^3.0.0",
     "chalk": "^2.0.0",
@@ -65,5 +56,12 @@
     "string-width": "^2.1.0",
     "strip-ansi": "^4.0.0",
     "through": "^2.3.6"
+  },
+  "devDependencies": {
+    "jest": "^23.6.0",
+    "lodash": "^4.3.0"
+  },
+  "jest": {
+    "setupTestFrameworkScriptFile": "<rootDir>/spec/_setup.js"
   }
 }

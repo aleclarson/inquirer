@@ -1,89 +1,85 @@
 var _ = require('lodash');
-var ReadlineStub = require('../helpers/readline');
-var fixtures = require('../helpers/fixtures');
+var readline = require('readline');
 
 var Confirm = require('../../lib/prompts/confirm');
 
 describe('`confirm` prompt', function() {
+  let rl, fixture, confirm;
   beforeEach(function() {
-    this.fixture = _.clone(fixtures.confirm);
-    this.rl = new ReadlineStub();
-    this.confirm = new Confirm(this.fixture, this.rl);
-  });
-
-  afterEach(function() {
-    Confirm.prototype.write = this._write;
+    fixture = _.clone(fixtures.confirm);
+    rl = readline.createInterface();
+    confirm = new Confirm(fixture, rl);
   });
 
   it('should default to true', function(done) {
-    this.confirm.run().then(answer => {
-      expect(this.rl.output.__raw__).to.contain('Y/n');
-      expect(answer).to.equal(true);
+    confirm.run().then(answer => {
+      expect(rl.output.__raw__).toContain('Y/n');
+      expect(answer).toBe(true);
       done();
     });
 
-    this.rl.emit('line', '');
+    rl.emit('line', '');
   });
 
   it('should allow a default `false` value', function(done) {
-    this.fixture.default = false;
-    var falseConfirm = new Confirm(this.fixture, this.rl);
+    fixture.default = false;
+    var falseConfirm = new Confirm(fixture, rl);
 
     falseConfirm.run().then(answer => {
-      expect(this.rl.output.__raw__).to.contain('y/N');
-      expect(answer).to.equal(false);
+      expect(rl.output.__raw__).toContain('y/N');
+      expect(answer).toBe(false);
       done();
     });
 
-    this.rl.emit('line', '');
+    rl.emit('line', '');
   });
 
   it('should allow a default `true` value', function(done) {
-    this.fixture.default = true;
-    var falseConfirm = new Confirm(this.fixture, this.rl);
+    fixture.default = true;
+    var falseConfirm = new Confirm(fixture, rl);
 
     falseConfirm.run().then(answer => {
-      expect(this.rl.output.__raw__).to.contain('Y/n');
-      expect(answer).to.equal(true);
+      expect(rl.output.__raw__).toContain('Y/n');
+      expect(answer).toBe(true);
       done();
     });
 
-    this.rl.emit('line', '');
+    rl.emit('line', '');
   });
 
   it("should parse 'Y' value to boolean true", function(done) {
-    this.confirm.run().then(answer => {
-      expect(answer).to.equal(true);
+    confirm.run().then(answer => {
+      expect(answer).toBe(true);
       done();
     });
 
-    this.rl.emit('line', 'Y');
+    rl.emit('line', 'Y');
   });
 
   it("should parse 'Yes' value to boolean true", function(done) {
-    this.confirm.run().then(answer => {
-      expect(answer).to.equal(true);
+    confirm.run().then(answer => {
+      expect(answer).toBe(true);
       done();
     });
 
-    this.rl.emit('line', 'Yes');
+    rl.emit('line', 'Yes');
   });
 
   it("should parse 'No' value to boolean false", function(done) {
-    this.confirm.run().then(answer => {
-      expect(answer).to.equal(false);
+    confirm.run().then(answer => {
+      expect(answer).toBe(false);
       done();
     });
 
-    this.rl.emit('line', 'No');
+    rl.emit('line', 'No');
   });
 
   it('should parse every other string value to boolean false', function(done) {
-    this.confirm.run().then(answer => {
-      expect(answer).to.equal(false);
+    confirm.run().then(answer => {
+      expect(answer).toBe(false);
       done();
     });
 
-    this.rl.emit('line', 'bla bla foo');
+    rl.emit('line', 'bla bla foo');
   });
 });

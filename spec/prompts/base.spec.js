@@ -1,16 +1,16 @@
-var ReadlineStub = require('../helpers/readline');
-
 var Base = require('../../lib/prompts/base');
+var readline = require('readline');
 
 describe('`base` prompt (e.g. prompt helpers)', function() {
+  let rl, base;
   beforeEach(function() {
-    this.rl = new ReadlineStub();
-    this.base = new Base(
+    rl = readline.createInterface();
+    base = new Base(
       {
         message: 'foo bar',
         name: 'name'
       },
-      this.rl
+      rl
     );
   });
 
@@ -19,9 +19,9 @@ describe('`base` prompt (e.g. prompt helpers)', function() {
       message: 'foo bar',
       name: 'name'
     };
-    var base = new Base(question, this.rl);
-    expect(question).to.not.equal(base.opt);
-    expect(question.name).to.equal(base.opt.name);
-    expect(question.message).to.equal(base.opt.message);
+    var base = new Base(question, rl);
+    expect(question).not.toBe(base.opt);
+    expect(question.name).toBe(base.opt.name);
+    expect(question.message).toBe(base.opt.message);
   });
 });
