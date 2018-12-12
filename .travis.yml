@@ -1,17 +1,20 @@
-sudo: false
 language: node_js
 node_js:
   - 6
   - 8
+  - 10
   - node
+git:
+  depth: 1
+  quiet: true
+env:
+  - NODE_ENV=test FORCE_COLOR=1 CODECOV_TOKEN=57505d49-e049-41f6-827c-6785f48bfcf3
 cache:
   yarn: true
-before_script:
-  - yarn lerna bootstrap
-script: yarn test
+  directories:
+    - 'node_modules'
+script:
+  - yarn test
 after_success:
-  - yarn codecov
-env:
-  global:
-    - FORCE_COLOR=1
-    - secure: dHdnulkfL3Es9kaH0JVFwPk5VUeD7fdiMYdNaId09ZTa9mL9BvYcHmeVK5g1ZIm1F0+QmLeJwjO+4dq1yjRz6IFnpbgQSlhIbYjs+8zBc1v+HTZZfB/kFRIqHO0x4nJG8vKVa+Sg5tp0pI7hiCgevsrlvf4Pb6D0Cyx+faSGNrY=
+  - yarn global add codecov@^3
+  - codecov
