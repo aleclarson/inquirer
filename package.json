@@ -54,7 +54,7 @@
     "run-async": "^2.2.0",
     "rxjs": "^6.1.0",
     "string-width": "^2.1.0",
-    "strip-ansi": "^4.0.0",
+    "strip-ansi": "^5.0.0",
     "through": "^2.3.6"
   },
   "devDependencies": {
