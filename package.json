@@ -1,41 +1,69 @@
 {
-  "private": true,
-  "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-jest": "^23.0.1",
-    "babel-preset-env": "^1.7.0",
-    "codecov": "^3.0.2",
-    "eslint": "^5.0.0",
-    "eslint-config-prettier": "^2.4.0",
-    "eslint-config-xo": "^0.23.0",
-    "eslint-plugin-prettier": "^2.2.0",
-    "husky": "^0.14.3",
-    "jest": "^23.1.0",
-    "lerna": "^2.11.0",
-    "lint-staged": "^7.0.0",
-    "prettier": "^1.7.0",
-    "regenerator-runtime": "^0.12.0"
-  },
-  "workspaces": [
-    "packages/*"
+  "name": "@aleclarson/inquirer",
+  "version": "6.0.0",
+  "description": "Extensible user input for nodejs",
+  "repository": "aleclarson/inquirer",
+  "author": "Simon Boudrias <admin@simonboudrias.com>",
+  "files": [
+    "lib"
   ],
+  "main": "lib/inquirer.js",
+  "keywords": [
+    "command",
+    "prompt",
+    "stdin",
+    "cli",
+    "tty",
+    "menu"
+  ],
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.0.1",
+    "lodash": "^4.3.0",
+    "mocha": "^5.0.0",
+    "mockery": "^2.1.0",
+    "nyc": "^12.0.1",
+    "sinon": "^5.0.0"
+  },
   "scripts": {
-    "precommit": "lint-staged",
-    "pretest": "eslint .",
-    "test": "jest --coverage && lerna exec yarn test --scope inquirer"
+    "test": "nyc mocha test/**/* -r ./test/before",
+    "posttest": "nyc report --reporter=text-lcov > ../../coverage/nyc-report.lcov"
   },
-  "lint-staged": {
-    "*.js": [
-      "eslint --fix",
-      "git add"
-    ],
-    "*.json": [
-      "prettier --write",
-      "git add"
-    ]
-  },
-  "jest": {
-    "coverageDirectory": "./coverage/",
-    "collectCoverage": true
+  "license": "MIT",
+  "dependencies": {
+    "ansi-escapes": "^3.0.0",
+    "chalk": "^2.0.0",
+    "cli-cursor": "^2.1.0",
+    "cli-width": "^2.0.0",
+    "external-editor": "^3.0.0",
+    "figures": "^2.0.0",
+    "lodash.assign": "^4.2.0",
+    "lodash.assignin": "^4.2.0",
+    "lodash.clone": "^4.5.0",
+    "lodash.defaults": "^4.2.0",
+    "lodash.filter": "^4.6.0",
+    "lodash.find": "^4.6.0",
+    "lodash.findindex": "^4.6.0",
+    "lodash.flatten": "^4.4.0",
+    "lodash.get": "^4.4.2",
+    "lodash.isboolean": "^3.0.3",
+    "lodash.isfunction": "^3.0.9",
+    "lodash.isnumber": "^3.0.3",
+    "lodash.isplainobject": "^4.0.6",
+    "lodash.isstring": "^4.0.1",
+    "lodash.last": "^3.0.0",
+    "lodash.map": "^4.6.0",
+    "lodash.omit": "^4.5.0",
+    "lodash.set": "^4.3.2",
+    "lodash.sum": "^4.0.2",
+    "lodash.uniq": "^4.5.0",
+    "mute-stream": "0.0.7",
+    "run-async": "^2.2.0",
+    "rxjs": "^6.1.0",
+    "string-width": "^2.1.0",
+    "strip-ansi": "^4.0.0",
+    "through": "^2.3.6"
   }
 }

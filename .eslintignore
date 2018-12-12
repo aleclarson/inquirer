@@ -1,6 +1,0 @@
-.git
-node_modules
-packages/*/node_modules
-packages/*/coverage
-packages/*/.nyc_output
-packages/*/__snapshots__
