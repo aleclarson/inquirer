@@ -4,7 +4,7 @@ var readline = require('readline');
 var List = require('../../lib/prompts/list');
 
 describe('`list` prompt', function() {
-  let rl, fixture, list;
+  var rl, fixture, list;
   beforeEach(function() {
     fixture = _.clone(fixtures.list);
     rl = readline.createInterface();

@@ -4,7 +4,7 @@ var readline = require('readline');
 var Checkbox = require('../../lib/prompts/checkbox');
 
 describe('`checkbox` prompt', function() {
-  let rl, fixture, checkbox;
+  var rl, fixture, checkbox;
   beforeEach(function() {
     fixture = _.clone(fixtures.checkbox);
     rl = readline.createInterface();
@@ -184,6 +184,7 @@ describe('`checkbox` prompt', function() {
   });
 
   describe('with disabled choices', function() {
+    var checkbox;
     beforeEach(function() {
       fixture.choices.push({
         name: 'dis1',

@@ -4,7 +4,7 @@ var readline = require('readline');
 var Expand = require('../../lib/prompts/expand');
 
 describe('`expand` prompt', function() {
-  let rl, fixture, expand;
+  var rl, fixture, expand;
   beforeEach(function() {
     fixture = _.clone(fixtures.expand);
     rl = readline.createInterface();
@@ -106,12 +106,11 @@ describe('`expand` prompt', function() {
   });
 
   it('should not allow invalid command', function() {
-    var self = this;
     var promise = expand.run();
 
     rl.emit('line', 'blah');
     setTimeout(() => {
-      self.rl.emit('line', 'a');
+      rl.emit('line', 'a');
     }, 10);
     return promise;
   });

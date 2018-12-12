@@ -4,7 +4,7 @@ var readline = require('readline');
 var Input = require('../../lib/prompts/input');
 
 describe('`input` prompt', function() {
-  let rl, fixture;
+  var rl, fixture;
   beforeEach(function() {
     fixture = _.clone(fixtures.input);
     rl = readline.createInterface();

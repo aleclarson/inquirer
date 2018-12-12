@@ -6,6 +6,9 @@ var _ = require('lodash');
 var inquirer = require('..');
 var readline = require('readline');
 
+// These are reset for every test.
+var Prompt, fixture, rl;
+
 // Define prompts and their public API
 var prompts = [
   {
@@ -58,7 +61,7 @@ var tests = {
 
       it('should allow filter function to be asynchronous', function(done) {
         fixture.filter = function() {
-          var done = async();
+          var done = this.async();
           setTimeout(() => {
             done(null, 'pass');
           }, 0);
@@ -75,11 +78,10 @@ var tests = {
 
       it('should handle errors produced in async filters', function() {
         var called = 0;
-        var rl = rl;
 
         fixture.filter = function() {
           called++;
-          var cb = async();
+          var cb = this.async();
 
           if (called === 2) {
             return cb(null, 'pass');
@@ -109,7 +111,7 @@ var tests = {
             name: 'q2',
             message: 'message',
             filter: function(input, answers) {
-              expect(answers.q1).toBe(true);
+              expect(answers).toEqual({ q1: true });
               return input;
             },
             default: false
@@ -120,8 +122,7 @@ var tests = {
         autosubmit(promise.ui);
 
         return promise.then(answers => {
-          expect(answers.q1).toBe(true);
-          expect(answers.q2).toBe(false);
+          expect(answers).toEqual({ q1: true, q2: false });
         });
       });
     });
@@ -151,7 +152,6 @@ var tests = {
       });
 
       it('should reject input if a string is returned', function(done) {
-        var self = this;
         var called = 0;
         var errorMessage = 'uh oh, error!';
 
@@ -163,7 +163,7 @@ var tests = {
             return;
           }
 
-          self.rl.emit('line');
+          rl.emit('line');
           return errorMessage;
         };
 
@@ -174,7 +174,6 @@ var tests = {
       });
 
       it('should reject input if a Promise is returned which rejects', function(done) {
-        var self = this;
         var called = 0;
         var errorMessage = 'uh oh, error!';
 
@@ -186,7 +185,7 @@ var tests = {
             return;
           }
 
-          self.rl.emit('line');
+          rl.emit('line');
           return Promise.reject(errorMessage);
         };
 
@@ -214,18 +213,17 @@ var tests = {
       });
 
       it('should allow validate function to be asynchronous', function() {
-        var self = this;
         var called = 0;
 
         fixture.validate = function() {
-          var done = async();
+          var done = this.async();
           setTimeout(() => {
             called++;
             // Make sure returning false won't continue
             if (called === 2) {
               done(null, true);
             } else {
-              self.rl.emit('line');
+              rl.emit('line');
             }
             done(false);
           }, 0);
@@ -365,8 +363,8 @@ describe('Prompt public APIs', function() {
   _.each(prompts, function(detail) {
     describe('on ' + detail.name + ' prompt', function() {
       beforeEach(function() {
-        fixture = _.clone(fixtures[detail.name]);
         Prompt = inquirer.prompt.prompts[detail.name];
+        fixture = _.clone(fixtures[detail.name]);
         rl = readline.createInterface();
       });
 

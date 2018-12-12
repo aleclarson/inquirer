@@ -4,12 +4,13 @@ var { Observable } = require('rxjs');
 var inquirer = require('..');
 
 describe('inquirer.prompt', function() {
+  var prompt;
   beforeEach(function() {
     prompt = inquirer.createPromptModule();
+    jest.clearAllMocks();
   });
 
   it("should close and create a new readline instances each time it's called", function() {
-    var ctx = this;
     var rl1;
 
     var promise = prompt({
@@ -22,11 +23,12 @@ describe('inquirer.prompt', function() {
     rl1.emit('line');
 
     return promise.then(() => {
-      expect(rl1.close.called).toBe(true);
-      expect(rl1.output.end.called).toBe(true);
+      expect(rl1.close).toBeCalled();
+      expect(rl1.output.end).toBeCalled();
+      jest.clearAllMocks();
 
       var rl2;
-      var promise2 = ctx.prompt({
+      var promise2 = prompt({
         type: 'confirm',
         name: 'q1',
         message: 'message'
@@ -36,8 +38,8 @@ describe('inquirer.prompt', function() {
       rl2.emit('line');
 
       return promise2.then(() => {
-        expect(rl2.close.called).toBe(true);
-        expect(rl2.output.end.called).toBe(true);
+        expect(rl1.close).toBeCalled();
+        expect(rl1.output.end).toBeCalled();
 
         expect(rl1).not.toBe(rl2);
       });
@@ -87,7 +89,7 @@ describe('inquirer.prompt', function() {
     autosubmit(promise.ui);
 
     return promise.then(answers => {
-      expect(answers).to.deep.equal({
+      expect(answers).toEqual({
         foo: {
           bar: {
             q1: true
@@ -99,14 +101,12 @@ describe('inquirer.prompt', function() {
   });
 
   it('should take a single prompt and return answer', function() {
-    var prompt = {
+    var promise = prompt({
       type: 'input',
       name: 'q1',
       message: 'message',
       default: 'bar'
-    };
-
-    var promise = prompt(prompt);
+    });
 
     promise.ui.rl.emit('line');
     return promise.then(answers => {
@@ -117,12 +117,12 @@ describe('inquirer.prompt', function() {
   it('should parse `message` if passed as a function', function() {
     var stubMessage = 'foo';
     prompt.registerPrompt('stub', function(params) {
-      opt = {
+      this.opt = {
         when: function() {
           return true;
         }
       };
-      run = jest.fn(() => Promise.resolve());
+      this.run = jest.fn(() => Promise.resolve());
       expect(params.message).toBe(stubMessage);
     });
 
@@ -157,12 +157,12 @@ describe('inquirer.prompt', function() {
   it('should run asynchronous `message`', function(done) {
     var stubMessage = 'foo';
     prompt.registerPrompt('stub', function(params) {
-      opt = {
+      this.opt = {
         when: function() {
           return true;
         }
       };
-      run = jest.fn(() => Promise.resolve());
+      this.run = jest.fn(() => Promise.resolve());
       expect(params.message).toBe(stubMessage);
       done();
     });
@@ -179,27 +179,27 @@ describe('inquirer.prompt', function() {
         name: 'name',
         message: function(answers) {
           expect(answers.name1).toBe('bar');
-          var goOn = async();
+          var next = this.async();
           setTimeout(() => {
-            goOn(null, stubMessage);
+            next(null, stubMessage);
           }, 0);
         }
       }
     ];
 
-    var promise = prompt(prompts, function() {});
+    var promise = prompt(prompts);
     promise.ui.rl.emit('line');
   });
 
   it('should parse `default` if passed as a function', function(done) {
     var stubDefault = 'foo';
     prompt.registerPrompt('stub', function(params) {
-      opt = {
+      this.opt = {
         when: function() {
           return true;
         }
       };
-      run = jest.fn(() => Promise.resolve());
+      this.run = jest.fn(() => Promise.resolve());
       expect(params.default).toBe(stubDefault);
       done();
     });
@@ -226,7 +226,7 @@ describe('inquirer.prompt', function() {
     promise.ui.rl.emit('line');
   });
 
-  it('should run asynchronous `default`', function() {
+  it('should run asynchronous `default`', function(done) {
     var goesInDefault = false;
     var input2Default = 'foo';
     var promise;
@@ -244,9 +244,9 @@ describe('inquirer.prompt', function() {
         default: function(answers) {
           goesInDefault = true;
           expect(answers.name1).toBe('bar');
-          var goOn = async();
+          var next = this.async();
           setTimeout(() => {
-            goOn(null, input2Default);
+            next(null, input2Default);
           }, 0);
           setTimeout(() => {
             promise.ui.rl.emit('line');
@@ -266,7 +266,7 @@ describe('inquirer.prompt', function() {
 
   it('should pass previous answers to the prompt constructor', function(done) {
     prompt.registerPrompt('stub', function(params, rl, answers) {
-      run = jest.fn(() => Promise.resolve());
+      this.run = jest.fn(() => Promise.resolve());
       expect(answers.name1).toBe('bar');
       done();
     });
@@ -292,8 +292,8 @@ describe('inquirer.prompt', function() {
   it('should parse `choices` if passed as a function', function(done) {
     var stubChoices = ['foo', 'bar'];
     prompt.registerPrompt('stub', function(params) {
-      run = jest.fn(() => Promise.resolve());
-      opt = {
+      this.run = jest.fn(() => Promise.resolve());
+      this.opt = {
         when: function() {
           return true;
         }
@@ -325,14 +325,13 @@ describe('inquirer.prompt', function() {
   });
 
   it('should returns a promise', function(done) {
-    var prompt = {
+    var promise = prompt({
       type: 'input',
       name: 'q1',
       message: 'message',
       default: 'bar'
-    };
+    });
 
-    var promise = prompt(prompt);
     promise.then(answers => {
       expect(answers.q1).toBe('bar');
       done();
@@ -342,7 +341,7 @@ describe('inquirer.prompt', function() {
   });
 
   it('should expose the Reactive interface', function(done) {
-    var prompts = [
+    var promise = prompt([
       {
         type: 'input',
         name: 'name1',
@@ -355,26 +354,24 @@ describe('inquirer.prompt', function() {
         message: 'message',
         default: 'doe'
       }
-    ];
+    ]);
 
-    var promise = prompt(prompts);
     var spy = jest.fn();
-    promise.ui.process.subscribe(
-      spy,
-      function() {},
-      function() {
-        expect(spy).toBeCalledWith(spy, { name: 'name1', answer: 'bar' });
-        expect(spy).toBeCalledWith(spy, { name: 'name', answer: 'doe' });
-        done();
-      }
-    );
+    promise.ui.process.subscribe(spy);
+    promise.then(() => {
+      expect(spy.mock.calls).toEqual([
+        [{ name: 'name1', answer: 'bar' }],
+        [{ name: 'name', answer: 'doe' }]
+      ]);
+      done();
+    });
 
     autosubmit(promise.ui);
   });
 
   it('should expose the UI', function(done) {
     var promise = prompt([], function() {});
-    expect(promise.ui.answers).to.be.an('object');
+    expect(promise.ui.answers).toEqual({});
     done();
   });
 
@@ -419,8 +416,7 @@ describe('inquirer.prompt', function() {
           name: 'q2',
           message: 'message',
           when: function(answers) {
-            expect(answers).to.be.an('object');
-            expect(answers.q1).toBe(true);
+            expect(answers).toEqual({ q1: true });
           }
         }
       ];
@@ -567,9 +563,9 @@ describe('inquirer.prompt', function() {
           default: 'foo-bar',
           when: function() {
             goesInWhen = true;
-            var goOn = async();
+            var next = this.async();
             setTimeout(() => {
-              goOn(null, true);
+              next(null, true);
             }, 0);
             setTimeout(() => {
               promise.ui.rl.emit('line');
@@ -612,9 +608,9 @@ describe('inquirer.prompt', function() {
     it('register new prompt types', function(done) {
       var questions = [{ type: 'foo', message: 'something' }];
       inquirer.registerPrompt('foo', function(question, rl, answers) {
-        expect(question).to.eql(questions[0]);
-        expect(answers).to.eql({});
-        run = jest.fn(() => Promise.resolve());
+        expect(question).toEqual(questions[0]);
+        expect(answers).toEqual({});
+        this.run = jest.fn(() => Promise.resolve());
         done();
       });
 
@@ -624,7 +620,7 @@ describe('inquirer.prompt', function() {
     it('overwrite default prompt types', function(done) {
       var questions = [{ type: 'confirm', message: 'something' }];
       inquirer.registerPrompt('confirm', function() {
-        run = jest.fn(() => Promise.resolve());
+        this.run = jest.fn(() => Promise.resolve());
         done();
       });
 
@@ -648,7 +644,6 @@ describe('inquirer.prompt', function() {
     process.stdout.getWindowSize = function() {
       return [0];
     };
-    var prompt = inquirer.createPromptModule();
 
     var prompts = [
       {

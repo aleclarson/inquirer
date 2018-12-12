@@ -2,7 +2,7 @@ var Base = require('../../lib/prompts/base');
 var readline = require('readline');
 
 describe('`base` prompt (e.g. prompt helpers)', function() {
-  let rl, base;
+  var rl, base;
   beforeEach(function() {
     rl = readline.createInterface();
     base = new Base(

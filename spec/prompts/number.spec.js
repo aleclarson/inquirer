@@ -6,7 +6,7 @@ var NumberPrompt = require('../../lib/prompts/number');
 const ACCEPTABLE_ERROR = 0.001;
 
 describe('`number` prompt', function() {
-  let rl, fixture, number;
+  var rl, fixture, number;
   beforeEach(function() {
     fixture = _.clone(fixtures.number);
     rl = readline.createInterface();

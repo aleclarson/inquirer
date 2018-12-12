@@ -4,7 +4,7 @@ var readline = require('readline');
 var Confirm = require('../../lib/prompts/confirm');
 
 describe('`confirm` prompt', function() {
-  let rl, fixture, confirm;
+  var rl, fixture, confirm;
   beforeEach(function() {
     fixture = _.clone(fixtures.confirm);
     rl = readline.createInterface();

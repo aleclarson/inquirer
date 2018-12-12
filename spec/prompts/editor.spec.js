@@ -4,7 +4,7 @@ var readline = require('readline');
 var Editor = require('../../lib/prompts/editor');
 
 describe('`editor` prompt', function() {
-  let rl, fixture, previousVisual;
+  var rl, fixture, previousVisual;
   beforeEach(function() {
     previousVisual = process.env.VISUAL;
     // Writes the word "testing" to the file

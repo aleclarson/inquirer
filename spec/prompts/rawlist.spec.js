@@ -4,7 +4,7 @@ var readline = require('readline');
 var Rawlist = require('../../lib/prompts/rawlist');
 
 describe('`rawlist` prompt', function() {
-  let rl, fixture, rawlist;
+  var rl, fixture, rawlist;
   beforeEach(function() {
     rl = readline.createInterface();
     fixture = _.clone(fixtures.rawlist);
@@ -30,12 +30,11 @@ describe('`rawlist` prompt', function() {
   });
 
   it('should not allow invalid index', function() {
-    var self = this;
     var promise = rawlist.run();
 
     rl.emit('line', 'blah');
     setTimeout(() => {
-      self.rl.emit('line', '1');
+      rl.emit('line', '1');
     }, 10);
 
     return promise;

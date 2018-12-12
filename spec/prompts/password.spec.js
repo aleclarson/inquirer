@@ -17,7 +17,7 @@ function testMasking(rl, mask) {
 }
 
 describe('`password` prompt', function() {
-  let rl, fixture;
+  var rl, fixture;
   beforeEach(function() {
     fixture = _.clone(fixtures.password);
     rl = readline.createInterface();
