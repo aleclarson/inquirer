@@ -1,5 +1,5 @@
 var mockery = require('mockery');
-var ReadlineStub = require('./helpers/readline');
+var ReadlineStub = require('./readline');
 
 mockery.enable();
 mockery.warnOnUnregistered(false);

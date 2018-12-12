@@ -1,15 +1,14 @@
-var expect = require('chai').expect;
 var _ = require('lodash');
-var ReadlineStub = require('../../helpers/readline');
-var fixtures = require('../../helpers/fixtures');
+var ReadlineStub = require('../helpers/readline');
+var fixtures = require('../helpers/fixtures');
 
-var Editor = require('../../../lib/prompts/editor');
+var Editor = require('../../lib/prompts/editor');
 
 describe('`editor` prompt', function() {
   beforeEach(function() {
     this.previousVisual = process.env.VISUAL;
     // Writes the word "testing" to the file
-    process.env.VISUAL = 'node ./test/bin/write.js testing';
+    process.env.VISUAL = 'node ./spec/bin/write.js testing';
     this.fixture = _.clone(fixtures.editor);
     this.rl = new ReadlineStub();
   });

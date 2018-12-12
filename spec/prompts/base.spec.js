@@ -1,7 +1,6 @@
-var expect = require('chai').expect;
-var ReadlineStub = require('../../helpers/readline');
+var ReadlineStub = require('../helpers/readline');
 
-var Base = require('../../../lib/prompts/base');
+var Base = require('../../lib/prompts/base');
 
 describe('`base` prompt (e.g. prompt helpers)', function() {
   beforeEach(function() {

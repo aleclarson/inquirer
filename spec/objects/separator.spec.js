@@ -1,8 +1,7 @@
-var expect = require('chai').expect;
 var stripAnsi = require('strip-ansi');
 
-var Separator = require('../../../lib/objects/separator');
-var Inquirer = require('../../../lib/inquirer');
+var Separator = require('../../lib/objects/separator');
+var Inquirer = require('../../lib/inquirer');
 
 describe('Separator constructor', function() {
   it('should set a default', function() {

@@ -1,10 +1,9 @@
 var stripAnsi = require('strip-ansi');
-var expect = require('chai').expect;
 var _ = require('lodash');
-var ReadlineStub = require('../../helpers/readline');
-var fixtures = require('../../helpers/fixtures');
+var ReadlineStub = require('../helpers/readline');
+var fixtures = require('../helpers/fixtures');
 
-var Password = require('../../../lib/prompts/password');
+var Password = require('../../lib/prompts/password');
 
 function testMasking(rl, mask) {
   return function(answer) {

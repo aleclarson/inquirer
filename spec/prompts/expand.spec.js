@@ -1,9 +1,8 @@
-var expect = require('chai').expect;
 var _ = require('lodash');
-var ReadlineStub = require('../../helpers/readline');
-var fixtures = require('../../helpers/fixtures');
+var ReadlineStub = require('../helpers/readline');
+var fixtures = require('../helpers/fixtures');
 
-var Expand = require('../../../lib/prompts/expand');
+var Expand = require('../../lib/prompts/expand');
 
 describe('`expand` prompt', function() {
   beforeEach(function() {

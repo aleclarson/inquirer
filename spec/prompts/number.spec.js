@@ -1,9 +1,8 @@
-var expect = require('chai').expect;
 var _ = require('lodash');
-var ReadlineStub = require('../../helpers/readline');
-var fixtures = require('../../helpers/fixtures');
+var ReadlineStub = require('../helpers/readline');
+var fixtures = require('../helpers/fixtures');
 
-var NumberPrompt = require('../../../lib/prompts/number');
+var NumberPrompt = require('../../lib/prompts/number');
 
 const ACCEPTABLE_ERROR = 0.001;
 

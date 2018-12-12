@@ -2,12 +2,11 @@
  * Inquirer public API test
  */
 
-var expect = require('chai').expect;
 var sinon = require('sinon');
 var _ = require('lodash');
 var { Observable } = require('rxjs');
-var inquirer = require('../../lib/inquirer');
-var autosubmit = require('../helpers/events').autosubmit;
+var inquirer = require('../lib/inquirer');
+var autosubmit = require('./helpers/events').autosubmit;
 
 describe('inquirer.prompt', function() {
   beforeEach(function() {

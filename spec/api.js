@@ -2,12 +2,11 @@
  * Test Prompt public APIs
  */
 
-var expect = require('chai').expect;
 var _ = require('lodash');
-var fixtures = require('../helpers/fixtures');
-var ReadlineStub = require('../helpers/readline');
-var inquirer = require('../../lib/inquirer');
-var autosubmit = require('../helpers/events').autosubmit;
+var fixtures = require('./helpers/fixtures');
+var ReadlineStub = require('./helpers/readline');
+var inquirer = require('../lib/inquirer');
+var autosubmit = require('./helpers/events').autosubmit;
 
 // Define prompts and their public API
 var prompts = [
